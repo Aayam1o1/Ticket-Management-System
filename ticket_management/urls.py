@@ -29,7 +29,7 @@ if settings.DEBUG:
 
     schema_view = get_schema_view(
         openapi.Info(
-            title="EIA API",
+            title="Ticket Management System API",
             default_version="v1",
         ),
         public=True,

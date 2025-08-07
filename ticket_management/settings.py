@@ -24,6 +24,8 @@ from django.utils.translation import gettext_lazy as _
 BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, True),
+    CSRF_TRUSTED_ORIGINS=(list, []),
+
     ALLOWED_HOSTS=(list, []),
     CSRF_COOKIE_SECURE=(bool, False),
     SESSION_COOKIE_SECURE=(bool, False),
@@ -55,11 +57,12 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     'rest_framework',
-    'drf_yasg'
+    'drf_yasg',
+    'rest_framework_simplejwt'
 ]
 
 PROJECT_APPS = [
-    'account'
+    'account',
 ]
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
@@ -73,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 
@@ -149,13 +153,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "account.User"
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.BasicAuthentication",
-    ),
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+    ],
+
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
 }
 
@@ -181,3 +191,38 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CSRF_TRUSTED_ORIGINS = env(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ],
+)
+
+
+# SimpleJWT settings
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=env.int("ACCESS_TOKEN_LIFETIME")),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=env.int("REFRESH_TOKEN_LIFETIME")),
+    "ROTATE_REFRESH_TOKENS": env.bool("ROTATE_REFREH_TOKEN"),
+    "BLACKLIST_AFTER_ROTATION": env.bool("BLACKLIST_AFTER_ROTATION"),
+    "UPDATE_LAST_LOGIN": env.bool("UPDATE_LAST_LOGIN"),
+    "ALGORITHM": env("ALGORITHM"),
+    "SIGNING_KEY": env("SECRET_KEY"),
+    "VERIFYING_KEY": env("VERIFYING_KEY", default="none"),
+    "AUDIENCE": env("AUDIENCE", default="none"),
+    "ISSUER": env("ISSUER", default="none"),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "JTI_CLAIM": "jti",
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(days=60),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+}

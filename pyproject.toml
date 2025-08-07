@@ -13,6 +13,8 @@ django-debug-toolbar = "^6.0.0"
 drf-yasg = "^1.21.10"
 psycopg2-binary = "^2.9.10"
 django-redis = "^6.0.0"
+django-phonenumber-field = {extras = ["phonenumbers"], version = "^8.1.0"}
+djangorestframework-simplejwt = "^5.5.1"
 
 [build-system]
 requires = ["poetry-core"]
