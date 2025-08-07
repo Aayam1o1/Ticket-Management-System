@@ -8,7 +8,8 @@ from rest_framework import permissions
 
 urlpatterns = []
 api_urls = [
-    
+    path("account/", include("account.api.urls")),
+
 ]
 
 web_urls = [

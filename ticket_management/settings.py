@@ -54,11 +54,12 @@ DJANGO_APPS = [
 
 
 THIRD_PARTY_APPS = [
-    "rest_framework",
+    'rest_framework',
+    'drf_yasg'
 ]
 
 PROJECT_APPS = [
-    
+    'account'
 ]
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
