@@ -43,9 +43,18 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(username, password, **extra_fields)
 
 
+        
+class Role(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    permissions = models.ManyToManyField('Permission', blank=True)
+
+    def __str__(self):
+        return self.name
+    
 class User(AbstractUser):
 
     phone_number = ValidPhoneNumberField(_("Phone Number"))
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True)
 
     objects = CustomUserManager()
 
@@ -53,3 +62,11 @@ class User(AbstractUser):
         """Validate to ensure phone_number."""
         if not self.phone_number:
             raise ValidationError("Phone number must be provided.")
+        
+
+class Permission(models.Model):
+    permission_type = models.CharField(max_length=50, unique=True) 
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.permission_type
