@@ -63,6 +63,7 @@ THIRD_PARTY_APPS = [
 
 PROJECT_APPS = [
     'account',
+    'menu'
 ]
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True

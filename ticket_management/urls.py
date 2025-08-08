@@ -10,7 +10,7 @@ from ticket_management.utils import CustomSchemaGenerator
 urlpatterns = []
 api_urls = [
     path("account/", include("account.api.urls")),
-
+    path("menu/", include("menu.api.urls")),
 ]
 
 web_urls = [
