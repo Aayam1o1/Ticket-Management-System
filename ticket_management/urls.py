@@ -5,7 +5,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import permissions
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from ticket_management.utils import CustomSchemaGenerator
 urlpatterns = []
 api_urls = [
     path("account/", include("account.api.urls")),
@@ -34,8 +35,9 @@ if settings.DEBUG:
         ),
         public=True,
         permission_classes=(permissions.AllowAny,),
+        authentication_classes=[JWTAuthentication], 
+        generator_class=CustomSchemaGenerator,
     )
-
     dev_urlpatterns = [
         path("__debug__/", include(debug_toolbar.urls)),
         path(
