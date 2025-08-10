@@ -16,8 +16,6 @@ class SimpleMenuSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-
-
 class TicketSerializer(serializers.ModelSerializer):
     menu = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Menu.objects.all(), write_only=True
@@ -33,20 +31,27 @@ class TicketSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_by', 'created_at']
 
     def get_menu_details(self, obj):
-        assigned_menus = obj.menu.all()
-        all_menus = set()
+        user = self.context['request'].user
 
-        for menu in assigned_menus:
+        accessible_menus = set()
+        for menu in user.assigned_menus.all():
+            accessible_menus.add(menu)
+            accessible_menus.update(menu.get_descendants())
+
+        ticket_menus = obj.menu.all()
+        filtered_menus = [m for m in ticket_menus if m in accessible_menus]
+
+        all_menus = set()
+        for menu in filtered_menus:
             all_menus.add(menu)
-            # Use your helper function instead of non-existent method
-            ancestors = get_ancestors(menu)[1:]  # exclude self
+            ancestors = get_ancestors(menu)[1:]  
             for ancestor in ancestors:
-                if ancestor in assigned_menus:
+                if ancestor in ticket_menus and ancestor in accessible_menus:
                     all_menus.add(ancestor)
 
         serializer = SimpleMenuSerializer(all_menus, many=True)
         return serializer.data
-
+    
     def validate_menu(self, menus):
         user = self.context['request'].user
         # Admin/Supervisor can create ticket with any menu

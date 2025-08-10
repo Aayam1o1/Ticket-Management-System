@@ -22,7 +22,6 @@ class Menu(models.Model):
         return self.name
 
     def get_descendants(self):
-        """Recursively fetch all descendants of this menu item."""
         descendants = set(self.children.all())
         for child in self.children.all():
             descendants.update(child.get_descendants())

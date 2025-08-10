@@ -47,6 +47,7 @@ class TicketPriorityListCreateView(generics.ListCreateAPIView):
     serializer_class = TicketPrioritySerializer
     permission_classes = [IsAuthenticated, CanManagePriority]
     
+    
 class TicketListView(generics.ListAPIView):
     serializer_class = TicketSerializer
     permission_classes = [IsAuthenticated, CanViewTicket]
@@ -57,17 +58,22 @@ class TicketListView(generics.ListAPIView):
         if not hasattr(user, "assigned_menus") or not user.assigned_menus.exists():
             return Ticket.objects.none()
 
-        assigned_menus = set()
-
+        # Expand assigned menus with descendants
+        expanded_assigned_menus = set()
         for menu in user.assigned_menus.all():
-            # If menu has children, add itself and all descendants
-            if menu.children.exists():
-                assigned_menus.add(menu)
-                assigned_menus.update(get_descendants(menu))
-            else:
-                assigned_menus.add(menu)
+            expanded_assigned_menus.add(menu)
+            expanded_assigned_menus.update(menu.get_descendants())
 
-        return Ticket.objects.filter(menu__in=assigned_menus).distinct()
+        candidate_tickets = Ticket.objects.filter(menu__in=expanded_assigned_menus).distinct()
+
+        filtered_ticket_ids = []
+        for ticket in candidate_tickets:
+            ticket_menus = set(ticket.menu.all())
+            if ticket_menus.intersection(expanded_assigned_menus):
+                filtered_ticket_ids.append(ticket.id)
+
+        return Ticket.objects.filter(id__in=filtered_ticket_ids)
+
 
 
 
