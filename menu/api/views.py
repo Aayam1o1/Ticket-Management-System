@@ -58,19 +58,23 @@ class UserMenuAssignUpdateView(generics.UpdateAPIView):
     def perform_update(self, serializer):
         selected_menus = serializer.validated_data.get('assigned_menus', [])
 
-        # Expand to include all descendants
         all_menus_to_assign = set()
+        visited = set()
         for menu in selected_menus:
-            all_menus_to_assign.add(menu)
-            all_menus_to_assign.update(self.get_all_descendants(menu))
+            if menu.id not in visited:
+                visited.add(menu.id)
+                all_menus_to_assign.add(menu)
+                all_menus_to_assign.update(self.get_all_descendants(menu, visited))
 
         serializer.save(assigned_menus=list(all_menus_to_assign))
 
-    def get_all_descendants(self, menu):
-        """Recursively get all child menus."""
-        descendants = set(menu.children.all())
+    def get_all_descendants(self, menu, visited):
+        descendants = set()
         for child in menu.children.all():
-            descendants.update(self.get_all_descendants(child))
+            if child.id not in visited:
+                visited.add(child.id)
+                descendants.add(child)
+                descendants.update(self.get_all_descendants(child, visited))
         return descendants
 
 class UserAssignedMenusRetrieveView(generics.RetrieveAPIView):

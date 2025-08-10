@@ -55,6 +55,9 @@ class TicketListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
 
+        if user.role and user.role.name == "Admin" or user.role.name == "Supervisor":
+            return Ticket.objects.all()
+
         if not hasattr(user, "assigned_menus") or not user.assigned_menus.exists():
             return Ticket.objects.none()
 
@@ -64,7 +67,11 @@ class TicketListView(generics.ListAPIView):
             expanded_assigned_menus.add(menu)
             expanded_assigned_menus.update(menu.get_descendants())
 
-        candidate_tickets = Ticket.objects.filter(menu__in=expanded_assigned_menus).distinct()
+        # Get tickets assigned to user and matching menus
+        candidate_tickets = Ticket.objects.filter(
+            assigned_to=user,
+            menu__in=expanded_assigned_menus
+        ).distinct()
 
         filtered_ticket_ids = []
         for ticket in candidate_tickets:
@@ -73,6 +80,29 @@ class TicketListView(generics.ListAPIView):
                 filtered_ticket_ids.append(ticket.id)
 
         return Ticket.objects.filter(id__in=filtered_ticket_ids)
+
+
+    # def get_queryset(self):
+    #     user = self.request.user
+
+    #     if not hasattr(user, "assigned_menus") or not user.assigned_menus.exists():
+    #         return Ticket.objects.none()
+
+    #     # Expand assigned menus with descendants
+    #     expanded_assigned_menus = set()
+    #     for menu in user.assigned_menus.all():
+    #         expanded_assigned_menus.add(menu)
+    #         expanded_assigned_menus.update(menu.get_descendants())
+
+    #     candidate_tickets = Ticket.objects.filter(menu__in=expanded_assigned_menus).distinct()
+
+    #     filtered_ticket_ids = []
+    #     for ticket in candidate_tickets:
+    #         ticket_menus = set(ticket.menu.all())
+    #         if ticket_menus.intersection(expanded_assigned_menus):
+    #             filtered_ticket_ids.append(ticket.id)
+
+    #     return Ticket.objects.filter(id__in=filtered_ticket_ids)
 
 
 

@@ -22,10 +22,18 @@ class RecursiveMenuSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'children']
 
     def get_children(self, obj):
-        if obj.children.exists():
-            return RecursiveMenuSerializer(obj.children.all(), many=True).data
-        return []
-    
+        visited = self.context.get('visited', set())
+        if obj.id in visited:
+            return [] 
+
+        visited.add(obj.id)
+
+        serializer = RecursiveMenuSerializer(
+            obj.children.all(), 
+            many=True, 
+            context={'visited': visited}
+        )
+        return serializer.data
 
 class UserMenuAssignSerializer(serializers.ModelSerializer):
     assigned_menus = serializers.PrimaryKeyRelatedField(

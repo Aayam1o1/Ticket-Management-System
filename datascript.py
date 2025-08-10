@@ -18,7 +18,7 @@ def run():
         ("can_manage_status", "Allows user to can manage status"),
         ("can_manage_priority", "Allows user to can manage priority"),
         ("can_manage_menu", "Allows user to can manage menu"),
-        ("can_create_roles", "Allow user to create new roles"),
+        ("can_manage_roles", "Allow user to manage roles"),
         ("can_manage_permissions", "Allow user to manage permissions"),
         
     ]
@@ -28,7 +28,7 @@ def run():
 
     # Roles
     roles_data = [
-        ("Admin", [ "can_manage_permissions", "can_create_roles", "can_manage_menu", "can_manage_priority", "can_manage_status", "can_delete_ticket", "can_view_ticket", "can_edit_ticket", "can_create_ticket" ]),
+        ("Admin", [ "can_manage_permissions", "can_manage_roles", "can_manage_menu", "can_manage_priority", "can_manage_status", "can_delete_ticket", "can_view_ticket", "can_edit_ticket", "can_create_ticket" ]),
         ("Agent", ["can_create_ticket", "can_view_ticket"]),
         ("Supervisor", ["can_edit_ticket", "can_view_ticket", "can_create_ticket", "can_manage_menu"]),
         ("normal", ["can_view_ticket"]),
