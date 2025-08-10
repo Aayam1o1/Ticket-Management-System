@@ -16,8 +16,9 @@ from account.api.serializers import (
     CustomTokenObtainPairSerializer,
     AssignPermissionSerializer
 )
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
+from account.permissions import CanManageRoles, CanManagePermissions
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
@@ -33,18 +34,23 @@ class LoginView(TokenObtainPairView):
 class RoleListCreateAPIView(generics.ListCreateAPIView):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [CanManageRoles]
+
+class RoleRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+    permission_classes = [CanManageRoles]
     
 
 class PermissionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [CanManagePermissions] 
 
 class PermissionRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [CanManagePermissions]
     
 
 class RolePermissionListAPIView(generics.RetrieveAPIView):
@@ -61,7 +67,6 @@ class RolePermissionListAPIView(generics.RetrieveAPIView):
 
 class AssignPermissionsToRoleAPIView(generics.CreateAPIView):
     serializer_class = AssignPermissionSerializer
-
     def post(self, request, *args, **kwargs):
         serializer = AssignPermissionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

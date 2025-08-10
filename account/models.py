@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 from account.validators import validate_phone_number
 
-
 class ValidPhoneNumberField(PhoneNumberField):
 
     """Class to validate phone number."""
@@ -55,6 +54,7 @@ class User(AbstractUser):
 
     phone_number = ValidPhoneNumberField(_("Phone Number"))
     role = models.ForeignKey(Role, on_delete=models.CASCADE, blank=True, null=True)
+    assigned_menus = models.ManyToManyField('menu.Menu', blank=True, related_name='assigned_users')
 
     objects = CustomUserManager()
 

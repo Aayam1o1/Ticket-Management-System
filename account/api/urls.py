@@ -13,7 +13,8 @@ from account.api.views import (
     PermissionListCreateAPIView,
     PermissionRetrieveUpdateDestroyAPIView,
     RolePermissionListAPIView,
-    AssignPermissionsToRoleAPIView
+    AssignPermissionsToRoleAPIView,
+    RoleRetrieveUpdateDestroyView
 )
 
 app_name = "account.api"
@@ -26,6 +27,7 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('roles/', RoleListCreateAPIView.as_view(), name='role-list-create'),
+    path('roles/<int:pk>/', RoleRetrieveUpdateDestroyView.as_view(), name='role-detail'),
     path('permissions/', PermissionListCreateAPIView.as_view(), name='permission-list-create'),
     path('permissions/<int:pk>/', PermissionRetrieveUpdateDestroyAPIView.as_view(), name='permission-detail'),
     path('roles/<int:pk>/permissions/', RolePermissionListAPIView.as_view(), name='role-permission-list'),
