@@ -63,7 +63,8 @@ THIRD_PARTY_APPS = [
 
 PROJECT_APPS = [
     'account',
-    'menu'
+    'menu',
+    'ticket'
 ]
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
@@ -227,3 +228,13 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(days=60),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 }
+
+
+
+EMAIL_CONFIG = env.email_url(
+    "EMAIL_URL",
+    default="consolemail://test@example.com:password@localhost:25",
+)
+vars().update(EMAIL_CONFIG)
+SERVER_EMAIL = EMAIL_CONFIG["EMAIL_HOST_USER"]
+DEFAULT_FROM_EMAIL = EMAIL_CONFIG["EMAIL_HOST_USER"]

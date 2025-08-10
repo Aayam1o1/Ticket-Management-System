@@ -11,6 +11,8 @@ urlpatterns = []
 api_urls = [
     path("account/", include("account.api.urls")),
     path("menu/", include("menu.api.urls")),
+    path("ticket/", include("ticket.api.urls")),
+
 ]
 
 web_urls = [
