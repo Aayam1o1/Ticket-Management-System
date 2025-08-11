@@ -30,13 +30,14 @@ Once `poetry` has finished downloading the dependencies:
 ```sh
 
 (env)$ cd project
+Please create a database for named ticket through psql or pgadmin.
 (env)$ python manage.py migrate
 (env)$ python datascript.py
 
 (env)$ python manage.py runserver
 ```
 
-Create a .env file and add all the necessary environment variable present in the .env.template file.
+Create a .env file and add all the necessary environment variable.
 And navigate to `http://127.0.0.1:8000/admin/`.
 
 ## Features
